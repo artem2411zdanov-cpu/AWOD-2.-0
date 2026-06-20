@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWOD 2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        body {
+            background: #08080e;
+            color: #e0e0ea;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .app {
+            width: 100%;
+            max-width: 800px;
+            background: #10101a;
+            border-radius: 32px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            border: 1px solid #1e1e2e;
+            animation: fadeUp 0.6s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Анимация переключения */
+        .fade {
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* АВТОРИЗАЦИЯ */
+        .auth-card {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .auth-card h1 {
+            font-size: 32px;
+            color: #a78bfa;
+            margin-bottom: 4px;
+        }
+        .auth-card p {
+            color: #6a6a7a;
+            margin-bottom: 24px;
+        }
+        .auth-card input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            background: #0e0e18;
+            border: 1px solid #1e1e2e;
+            border-radius: 14px;
+            color: #e0e0ea;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .auth-card input:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 12px rgba(167, 139, 250, 0.15);
+        }
+        .auth-card button {
+            width: 100%;
+            padding: 14px;
+            background: #a78bfa;
+            color: #08080e;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .auth-card button:hover {
+            background: #b69dfa;
+            transform: scale(1.02);
+        }
+        .switch-link {
+            color: #6a6a7a;
+            font-size: 14px;
+            margin-top: 16px;
+            display: block;
+        }
+        .switch-link span {
+            color: #a78bfa;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        #authMsg {
+            margin-top: 12px;
+            color: #f87171;
+            font-size: 14px;
+        }
+
+        /* ВКЛАДКИ DNS */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #1e1e2e;
+            padding-bottom: 12px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px 0;
+            text-align: center;
+            background: transparent;
+            color: #6a6a7a;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+        .tab:hover { color: #aaa; }
+        .tab.active {
+            color: #a78bfa;
+            background: #1a1a2a;
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.08);
+        }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+
+        /* DNS КАРТОЧКИ */
+        .dns-item {
+            background: #15151f;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #1f1f2f;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .dns-item:hover {
+            border-color: #a78bfa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(167, 139, 250, 0.12);
+        }
+        .dns-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #eef;
+        }
+        .dns-ip {
+            color: #a78bfa;
+            font-family: monospace;
+            font-size: 15px;
+            background: #0a0a12;
+            padding: 4px 14px;
+            border-radius: 10px;
+            border: 1px solid #2a2a3a;
+            display: inline-block;
+        }
+        .dns-tag {
+            font-size: 13px;
+            color: #7a7a8a;
+            margin-top: 5px;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .btn-icon {
+            background: #1f1f2f;
+            border: none;
+            color: #9a9aaa;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .btn-icon:hover {
+            background: #a78bfa;
+            color: #08080e;
+            transform: rotate(45deg);
+        }
+        .btn-copy {
+            background: #1f1f2f;
+            color: #a78bfa;
+            border: 1px solid #2a2a3a;
+            padding: 6px 18px;
+            border-radius: 24px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-size: 14px;
+        }
+        .btn-copy:hover {
+            background: #a78bfa;
+            color: #08080e;
+            border-color: #a78bfa;
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.25);
+        }
+        .info-popup {
+            display: none;
+            background: #1a1a28;
+            padding: 16px;
+            border-radius: 16px;
+            margin-top: 14px;
+            border: 1px solid #2a2a3a;
+            width: 100%;
+            font-size: 14px;
+            color: #bbb;
+            animation: fadeIn 0.3s ease;
+        }
+        .info-popup.open { display: block; }
+        .info-popup strong { color: #a78bfa; }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-header h1 { color: #a78bfa; font-size: 24px; }
+        .user-header span { color: #e0e0ea; }
+        .logout-btn {
+            background: #1f1f2f;
+            color: #e0e0ea;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .logout-btn:hover { background: #a78bfa; color: #08080e; }
+    </style>
+</head>
+<body>
+
+<div class="app" id="appContainer">
+
+    <!-- СТРАНИЦА ВХОДА -->
+    <div id="authPage" class="fade">
+        <div class="auth-card">
+            <h1>AWOD 2.0</h1>
+            <p>Almighty World of DNS</p>
+
+            <div id="loginForm">
+                <input type="text" id="loginNick" placeholder="Никнейм">
+                <input type="password" id="loginPass" placeholder="Пароль">
+                <button onclick="handleLogin()">Войти</button>
+                <div class="switch-link">Нет аккаунта? <span onclick="toggleAuth()">Зарегистрироваться</span></div>
+            </div>
+
+            <div id="regForm" class="hidden">
+                <input type="text" id="regNick" placeholder="Придумай никнейм">
+                <input type="password" id="regPass" placeholder="Придумай пароль">
+                <input type="password" id="regPass2" placeholder="Повтори пароль">
+                <button onclick="handleRegister()">Зарегистрироваться</button>
+                <div class="switch-link">Есть аккаунт? <span onclick="toggleAuth()">Войти</span></div>
+            </div>
+            <div id="authMsg"></div>
+        </div>
+    </div>
+
+    <!-- СТРАНИЦА DNS -->
+    <div id="dnsPage" class="hidden fade">
+        <div class="user-header">
+            <div>
+                <h1>AWOD 2.0</h1>
+                <p style="color:#6a6a7a; font-size:14px;">Привет, <span id="welcomeUser"></span>!</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Выход</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(0)">DNS</button>
+            <button class="tab" onclick="switchTab(1)">Бот</button>
+            <button class="tab" onclick="switchTab(2)">Профиль</button>
+        </div>
+
+        <div class="content">
+            <div class="page active" id="page0"><div id="dnsList"></div></div>
+            <div class="page" id="page1">
+                <div style="background:#15151f;border-radius:22px;padding:30px;text-align:center;border:1px solid #1f1f2f;">
+                    <h2 style="color:#a78bfa;">Бот AWOD</h2>
+                    <p style="color:#8a8a9a; margin-top:8px;">Скоро здесь появится умный бот.</p>
+                </div>
+            </div>
+            <div class="page" id="page2">
+                <div style="background:#15151f;border-radius:22px;padding:30px;text-align:center;border:1px solid #1f1f2f;">
+                    <div style="width:70px;height:70px;background:#1f1f2f;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#a78bfa;font-size:30px;">AW</div>
+                    <h2 style="color:#a78bfa;">Ваш профиль</h2>
+                    <p style="color:#8a8a9a; margin-top:8px;">Ваши сохранённые DNS и настройки.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== DNS ДАННЫЕ =====
+    const dnsData = [
+        { name: 'Google DNS', ip: '8.8.8.8', tag: 'Универсальный, для всех игр', speed: 'Быстрый', apps: 'Игры, соцсети, браузеры' },
+        { name: 'Cloudflare DNS', ip: '1.1.1.1', tag: 'Скорость и приватность', speed: 'Очень быстрый', apps: 'Valorant, CS2, Minecraft' },
+        { name: 'OpenDNS', ip: '208.67.222.222', tag: 'Безопасный серфинг', speed: 'Средний', apps: 'Браузеры, безопасный доступ' },
+        { name: 'Quad9', ip: '9.9.9.9', tag: 'Защита от вирусов', speed: 'Стабильный', apps: 'Защита от вредоносных сайтов' },
+        { name: 'AdGuard DNS', ip: '94.140.14.14', tag: 'Блокирует рекламу', speed: 'Средний', apps: 'Игры с рекламой, браузеры' },
+        { name: 'Yandex DNS', ip: '77.88.8.8', tag: 'Для РФ, стабильный', speed: 'Стабильный', apps: 'Все популярные приложения' },
+        { name: 'Comodo Secure', ip: '8.26.56.26', tag: 'Надёжный', speed: 'Средний', apps: 'Корпоративные приложения' },
+        { name: 'Verisign', ip: '64.6.64.6', tag: 'Корпоративный', speed: 'Высокий', apps: 'Бизнес-сервисы' },
+        { name: 'Norton ConnectSafe', ip: '199.85.126.10', tag: 'Безопасность', speed: 'Средний', apps: 'Защита детей' },
+        { name: 'CleanBrowsing', ip: '185.228.168.9', tag: 'Семейный фильтр', speed: 'Стабильный', apps: 'Родительский контроль' },
+        { name: 'Level3', ip: '4.2.2.1', tag: 'США/Европа', speed: 'Высокий', apps: 'Зарубежные сервисы' },
+        { name: 'CIRA', ip: '149.112.112.112', tag: 'Канадский', speed: 'Стабильный', apps: 'Северная Америка' },
+        { name: 'Hurricane Electric', ip: '74.82.42.42', tag: 'Очень быстрый', speed: 'Очень высокий', apps: 'Стриминг, игры' },
+        { name: 'Neustar', ip: '156.154.70.1', tag: 'Бизнес-класс', speed: 'Высокий', apps: 'Корпоративные сети' },
+        { name: 'UltraDNS', ip: '156.154.70.2', tag: 'Надёжный', speed: 'Высокий', apps: 'Критичные сервисы' },
+        { name: 'Dyn', ip: '216.146.35.35', tag: 'Хостинг', speed: 'Средний', apps: 'Веб-серверы' },
+        { name: 'Freenom World', ip: '80.80.80.80', tag: 'Простой', speed: 'Низкий', apps: 'Базовые подключения' },
+        { name: 'SafeDNS', ip: '195.46.39.39', tag: 'Детская безопасность', speed: 'Средний', apps: 'Детские приложения' },
+        { name: 'SmartViper', ip: '208.76.50.50', tag: 'Быстрый', speed: 'Высокий', apps: 'Скоростные игры' },
+        { name: 'G-Core Labs', ip: '95.213.172.10', tag: 'Европа', speed: 'Высокий', apps: 'Европейские серверы' },
+        { name: 'Alternate DNS', ip: '198.101.242.72', tag: 'Обход блокировок', speed: 'Средний', apps: 'VPN-подобный доступ' },
+        { name: 'OpenNIC', ip: '185.228.168.10', tag: 'Свобода', speed: 'Средний', apps: 'Обход цензуры' },
+        { name: 'DNS.Watch', ip: '84.200.69.80', tag: 'Анонимный', speed: 'Средний', apps: 'Приватный серфинг' },
+        { name: 'SecureDNS', ip: '216.146.35.35', tag: 'Надёжный', speed: 'Высокий', apps: 'Защищённые соединения' },
+        { name: 'FDN', ip: '80.67.169.40', tag: 'Франция', speed: 'Средний', apps: 'Европейские приложения' },
+        { name: 'DNS for Family', ip: '94.130.180.225', tag: 'Родительский контроль', speed: 'Стабильный', apps: 'Безопасность детей' },
+        { name: 'Comcast DNS', ip: '75.75.75.75', tag: 'Для США', speed: 'Высокий', apps: 'Американские сервисы' },
+        { name: 'AT&T DNS', ip: '68.94.156.1', tag: 'Оптимальный', speed: 'Высокий', apps: 'Телекоммуникации' },
+        { name: 'Windstream', ip: '209.18.47.61', tag: 'Надёжный', speed: 'Средний', apps: 'Провайдеры США' },
+        { name: 'Sprintlink', ip: '204.97.212.10', tag: 'Скоростной', speed: 'Высокий', apps: 'Игры на востоке США' },
+        { name: 'Verio', ip: '198.172.94.2', tag: 'Стабильный', speed: 'Средний', apps: 'Офисные сети' },
+        { name: 'TW Telecom', ip: '66.29.10.2', tag: 'Для пинга', speed: 'Низкий пинг', apps: 'Онлайн-игры' },
+        { name: 'Telefonica', ip: '194.179.2.2', tag: 'Испания', speed: 'Средний', apps: 'Испанские сервисы' },
+        { name: 'Vodafone DNS', ip: '212.124.29.41', tag: 'Европа', speed: 'Высокий', apps: 'Европейские приложения' },
+        { name: 'SingTel', ip: '165.21.83.88', tag: 'Азия', speed: 'Средний', apps: 'Азиатские сервисы' },
+        { name: 'PCCW', ip: '202.18.126.3', tag: 'Гонконг', speed: 'Средний', apps: 'Азиатские игры' },
+        { name: 'TATA', ip: '203.197.5.5', tag: 'Индия', speed: 'Средний', apps: 'Индийские приложения' },
+        { name: 'Airtel', ip: '125.22.46.1', tag: 'Индия', speed: 'Средний', apps: 'Индийские сервисы' },
+        { name: 'Telstra', ip: '203.131.184.11', tag: 'Австралия', speed: 'Средний', apps: 'Австралийские сервисы' },
+        { name: 'Cox DNS', ip: '68.1.1.1', tag: 'Надёжный', speed: 'Высокий', apps: 'Провайдеры США' },
+        { name: 'Time Warner Cable', ip: '209.18.47.61', tag: 'Для США', speed: 'Средний', apps: 'Американский интернет' },
+        { name: 'HughesNet', ip: '66.29.10.2', tag: 'Спутниковый', speed: 'Низкий', apps: 'Спутниковый интернет' },
+        { name: 'SBC Global', ip: '151.164.8.8', tag: 'Старый', speed: 'Средний', apps: 'Старые устройства' },
+        { name: 'Xfinity', ip: '68.87.72.130', tag: 'Для игр', speed: 'Высокий', apps: 'Игры в США' },
+        { name: 'MCI', ip: '208.59.255.1', tag: 'Для стабильности', speed: 'Высокий', apps: 'Критичные подключения' }
+    ];
+
+    // ===== АВТОРИЗАЦИЯ =====
+    function toggleAuth() {
+        document.getElementById('loginForm').classList.toggle('hidden');
+        document.getElementById('regForm').classList.toggle('hidden');
+        document.getElementById('authMsg').textContent = '';
+    }
+
+    function handleRegister() {
+        const nick = document.getElementById('regNick').value.trim();
+        const pass = document.getElementById('regPass').value.trim();
+        const pass2 = document.getElementById('regPass2').value.trim();
+        const msg = document.getElementById('authMsg');
+
+        if (!nick || !pass || !pass2) { msg.textContent = 'Заполни все поля!'; return; }
+        if (pass !== pass2) { msg.textContent = 'Пароли не совпадают!'; return; }
+        if (localStorage.getItem('awod_' + nick)) { msg.textContent = 'Этот ник уже занят!'; return; }
+
+        localStorage.setItem('awod_' + nick, pass);
+        localStorage.setItem('awod_current', nick);
+        window.location.reload();
+    }
+
+    function handleLogin() {
+        const nick = document.getElementById('loginNick').value.trim();
+        const pass = document.getElementById('loginPass').value.trim();
+        const msg = document.getElementById('authMsg');
+
+        const saved = localStorage.getItem('awod_' + nick);
+        if (!saved) { msg.textContent = 'Такого пользователя нет!'; return; }
+        if (saved !== pass) { msg.textContent = 'Неверный пароль!'; return; }
+
+        localStorage.setItem('awod_current', nick);
+        window.location.reload();
+    }
+
+    function logout() {
+        localStorage.removeItem('awod_current');
+        window.location.reload();
+    }
+
+    // ===== ИНИЦИАЛИЗАЦИЯ =====
+    const currentUser = localStorage.getItem('awod_current');
+    if (currentUser) {
+        document.getElementById('authPage').classList.add('hidden');
+        document.getElementById('dnsPage').classList.remove('hidden');
+        document.getElementById('welcomeUser').textContent = currentUser;
+        renderDNS();
+    }
+
+    // ===== DNS И ВКЛАДКИ =====
+    function renderDNS() {
+        const container = document.getElementById('dnsList');
+        container.innerHTML = '';
+        dnsData.forEach((d, idx) => {
+            const item = document.createElement('div');
+            item.className = 'dns-item';
+            item.innerHTML = `
+                <div style="flex:1">
+                    <div class="dns-name">${d.name} <span style="font-weight:400;color:#6a6a7a;font-size:14px">(${d.ip})</span></div>
+                    <div class="dns-tag">${d.tag}</div>
+                </div>
+                <div class="actions">
+                    <button class="btn-copy" onclick="copyIP('${d.ip}')">Копировать</button>
+                    <button class="btn-icon" onclick="toggleInfo(${idx})">⚙</button>
+                </div>
+                <div class="info-popup" id="info-${idx}">
+                    <strong>Скорость:</strong> ${d.speed}<br>
+                    <strong>Подходит для:</strong> ${d.apps}
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    function toggleInfo(idx) {
+        document.getElementById(`info-${idx}`).classList.toggle('open');
+    }
+
+    function copyIP(ip) {
+        navigator.clipboard.writeText(ip).then(() => alert('IP скопирован: ' + ip));
+    }
+
+    function switchTab(index) {
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            t.classList.toggle('active', i === index);
+        });
+        document.querySelectorAll('.page').forEach((p, i) => {
+            p.classList.toggle('active', i === index);
+        });
+    }
+</script>
+</body>
+</html>
